@@ -4,6 +4,7 @@ import { formatMyDate } from "@/lib/formatDate";
 import CourseOverview from "./CourseOverview";
 import CourseCuriculam from "./CourseCuriculam";
 import CourseInstructor from "./CourseInstructor";
+import Image from "next/image";
 
 const CourseDetails = ({ course }) => {
   const lastModifiedDate = formatMyDate(course?.modifiedOn);
@@ -22,11 +23,16 @@ const CourseDetails = ({ course }) => {
 
           <div className="flex sm:items-center gap-5 flex-col sm:flex-row sm:gap-6 md:gap-20 mt-6">
             <div className="flex items-center gap-2">
-              <img
-                className="w-[40px] h-[40px] rounded-full"
-                src={course?.instructor?.profile_picture}
-                alt={course?.instructor?.first_name}
-              />
+              {course?.instructor?.profile_picture ? (
+                <Image
+                  className="w-[40px] h-[40px] rounded-full"
+                  src={course.instructor.profile_picture}
+                  alt={course?.instructor?.first_name || "Instructor"}
+                  width={40}
+                  height={40}
+                />
+              ) : null}
+
               <p className="font-bold">
                 {course?.instructor?.first_name} {course?.instructor?.last_name}
               </p>
