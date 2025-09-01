@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { User } from "./models/user-model";
 import bcrypt from "bcryptjs";
+import { authConfig } from "./auth.config";
 
 export const {
   handlers: { GET, POST },
@@ -9,9 +10,7 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  session: {
-    strategy: "jwt",
-  },
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {

@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 
 import { MobileNav } from "@/components/mobile-nav";
 
-import Image from "next/image";
 import { X } from "lucide-react";
 
 import { Button, buttonVariants } from "./ui/button";
@@ -21,7 +20,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Logo } from "./logo";
 
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export function MainNav({ items, children }) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -106,10 +104,10 @@ export function MainNav({ items, children }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 mt-4">
               <DropdownMenuItem className="cursor-pointer" asChild>
-                <Link href="account">Profile</Link>
+                <Link href="/account">Profile</Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer" asChild>
-                <Link href="account/enrolled-courses">My Courses</Link>
+                <Link href="/account/enrolled-courses">My Courses</Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer" asChild>
                 <Link href="">Testimonials & Certificates</Link>
