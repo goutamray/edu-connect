@@ -1,4 +1,6 @@
-// "use server";
+"use server";
+
+import { signIn } from "@/auth";
 
 // import { signIn } from "next-auth";
 
@@ -18,3 +20,9 @@
 //     };
 //   }
 // }
+
+export async function doSocialLogin(formData) {
+  const action = formData.get("action");
+
+  await signIn(action, { redirectTo: "/courses" });
+}

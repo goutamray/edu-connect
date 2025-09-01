@@ -14,6 +14,7 @@ import {
 import { Button, buttonVariants } from "./ui/button";
 
 import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export function MobileNav({ items, children }) {
   useLockBody();
@@ -21,6 +22,10 @@ export function MobileNav({ items, children }) {
   const { data: session } = useSession();
 
   const [loginSession, setLoginSession] = React.useState(null);
+
+  if (session?.error === "RefreshAccessTokenError") {
+    redirect("/login");
+  }
 
   React.useEffect(() => {
     setLoginSession(session);
