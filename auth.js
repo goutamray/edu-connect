@@ -76,7 +76,12 @@ export const {
               user.password
             );
             if (isMatch) {
-              return user;
+              // return user;
+              return {
+                id: user._id.toString(), // must be string
+                name: user.name,
+                email: user.email,
+              };
             } else {
               throw new Error("Email or password mismatch");
             }
@@ -105,6 +110,18 @@ export const {
       // console.log(`JWT TOKEN : ${JSON.stringify(token)}`);
       // console.log(`JWT Account : ${JSON.stringify(account)}`);
 
+      // When logging in with credentials
+      if (account?.provider === "credentials" && user) {
+        return {
+          ...token,
+          user, // keep user data
+          accessToken: null, // credentials has no access_token
+          accessTokenExpires: null,
+          refreshToken: null,
+        };
+      }
+
+      // google login a eta kaj korbe
       if (user && account) {
         return {
           accessToken: account?.access_token,

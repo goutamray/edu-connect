@@ -30,7 +30,7 @@ export function LoginForm() {
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: false,
+      callbackUrl: "/courses",
     });
 
     if (res?.error) {
