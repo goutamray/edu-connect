@@ -35,18 +35,12 @@ const CourseModuleList = ({ module }) => {
           </div>
 
           <div className="space-y-3">
-            {/* {module?.lessonIds &&
-              module?.lessonIds?.map((lessonId) => {
-                console.log(lessonId);
-
-                return (
-                  <CourseLessionList lessionId={lessonId} key={lessonId} />
-                );
-              })} */}
-
-            {module?.lessonIds?.map((lessonId) => {
+            {/* {module?.lessonIds?.map((lessonId) => {
               const id = lessonId.toString(); // ✅ force string
               return <CourseLessionList lessonId={id} key={id} />;
+            })} */}
+            {module?.lessonIds?.map((lesson) => {
+              return <CourseLessionList lesson={lesson} key={lesson?.id} />;
             })}
           </div>
         </AccordionContent>

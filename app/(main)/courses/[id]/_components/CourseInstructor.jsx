@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const CourseInstructor = async ({ course }) => {
   const instructor = course?.instructor;
-  const fullName = `${instructor?.first_name} ${instructor?.last_name}`;
+  const fullName = `${instructor?.firstName} ${instructor?.lastName}`;
 
   const courseDetail = await getCourseDetailsByInstructor(course?._id);
 

@@ -9,9 +9,13 @@ const enrollmentSchema = new Schema({
     type: String,
     required: true,
   },
-  enrollment_date: {
-    type: Date,
+  method: {
+    type: String,
     required: true,
+  },
+  completion_date: {
+    type: Date,
+    required: false,
   },
   course: {
     type: Schema.Types.ObjectId,

@@ -2,12 +2,8 @@ import { getLessions } from "@/quires/lesson";
 import { cn } from "@/lib/utils";
 import { Tv } from "lucide-react";
 
-const CourseLessionList = async ({ lessonId }) => {
-  const lesson = await getLessions(lessonId);
-
-  if (!lesson) {
-    return <p className="text-slate-400 text-sm">Lesson not found</p>;
-  }
+const CourseLessionList = async ({ lesson }) => {
+  const lessonData = await getLessions(lesson.id);
 
   return (
     <button
@@ -18,7 +14,7 @@ const CourseLessionList = async ({ lessonId }) => {
     >
       <div className="flex items-center gap-x-2">
         <Tv size={16} className="text-slate-500" />
-        {lesson.title}
+        {lessonData?.title}
       </div>
     </button>
   );

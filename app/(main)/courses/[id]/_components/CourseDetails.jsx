@@ -27,14 +27,14 @@ const CourseDetails = ({ course }) => {
                 <Image
                   className="w-[40px] h-[40px] rounded-full"
                   src={course.instructor.profile_picture}
-                  alt={course?.instructor?.first_name || "Instructor"}
+                  alt={course?.instructor?.firstName || "Instructor"}
                   width={40}
                   height={40}
                 />
               ) : null}
 
               <p className="font-bold">
-                {course?.instructor?.first_name} {course?.instructor?.last_name}
+                {course?.instructor?.firstName} {course?.instructor?.lastName}
               </p>
             </div>
             <div className="flex items-center gap-2 text-sm">

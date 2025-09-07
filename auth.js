@@ -4,6 +4,8 @@ import { User } from "./models/user-model";
 import bcrypt from "bcryptjs";
 import { authConfig } from "./auth.config";
 import GoogleProvider from "next-auth/providers/google";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import mongoClientPromise from "./quires/database/mongoClientPromise";
 
 /**
  *
@@ -56,6 +58,9 @@ export const {
   signOut,
 } = NextAuth({
   ...authConfig,
+  adapter: MongoDBAdapter(mongoClientPromise, {
+    databaseName: process.env.ENVIRONMENT,
+  }),
   providers: [
     Credentials({
       credentials: {
@@ -103,7 +108,38 @@ export const {
           response_type: "code",
         },
       },
+      profile(profile) {
+        return {
+          id: profile.sub,
+          firstName: profile.given_name || profile.name,
+          lastName: profile.family_name || "",
+          email: profile.email,
+          profile_picture: profile.picture,
+          emailVerified: profile.email_verified,
+        };
+      },
     }),
+
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    //   authorization: {
+    //     params: {
+    //       prompt: "consent",
+    //       access_type: "offline",
+    //       response_type: "code",
+    //     },
+    //     profile(profile) {
+    //       return {
+    //         id: profile.sub,
+    //         firstName: profile.name,
+    //         email: profile.email,
+    //         image: profile.picture,
+    //         emailVerified: profile.email_verified,
+    //       };
+    //     },
+    //   },
+    // }),
   ],
   callbacks: {
     async jwt({ token, user, account }) {

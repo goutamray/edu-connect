@@ -9,7 +9,7 @@ import {
 } from "@/lib/convertData";
 import { getEnrollmentsForCourse } from "./enrollments";
 import { getTestimonialByCourse } from "./testimonial";
-import { LogIn } from "lucide-react";
+import { Lesson } from "@/models/lesson-model";
 
 /**
  *
@@ -64,6 +64,10 @@ export async function getCourseDetailsById(id) {
     .populate({
       path: "modules",
       model: Module,
+      populate: {
+        path: "lessonIds",
+        model: Lesson,
+      },
     })
     .lean();
 
