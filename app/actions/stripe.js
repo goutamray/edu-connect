@@ -64,6 +64,8 @@
 
 "use server";
 
+import { getCourseDetailsById } from "@/quires/courses";
+
 import { headers } from "next/headers";
 const CURRENCY = "inr";
 
@@ -86,13 +88,15 @@ function processPriceForStripe(price) {
 }
 
 export async function createCheckoutSession(data) {
-  console.log(data);
-
   const ui_mode = "hosted";
   const origin = headers().get("origin");
   const courseId = data.get("courseId");
-  const courseName = data.get("courseName");
-  const coursePrice = data.get("coursePrice");
+
+  const course = await getCourseDetailsById(courseId);
+  const courseName = course?.title;
+  const coursePrice = course?.price;
+
+  if (!course) return new Error("Course Not Found");
 
   const finalPrice = processPriceForStripe(coursePrice);
 
