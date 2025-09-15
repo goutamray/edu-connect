@@ -1,4 +1,5 @@
 import { replaceMongoIdInArray } from "@/lib/convertData";
+import { Course } from "@/models/course-model";
 import { Enrollment } from "@/models/enrollment-model";
 
 /**
@@ -33,5 +34,49 @@ export async function enrollForCourse(courseId, userId, paymentMethod) {
     return response;
   } catch (error) {
     throw new Error(error.message);
+  }
+}
+
+/**
+ *
+ * @param {*} userId
+ */
+export async function getEnrollmentsForUser(userId) {
+  try {
+    const enrollments = await Enrollment.find({ student: userId })
+      .populate({
+        path: "course",
+        model: Course,
+      })
+      .lean();
+
+    return replaceMongoIdInArray(enrollments);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+/**
+ *
+ * @param {*} courseId
+ * @param {*} studentId
+ */
+export async function hasEnrollmentsForCourse(courseId, studentId) {
+  try {
+    const enrollment = await Enrollment.findOne({
+      course: courseId,
+      student: studentId,
+    })
+      .populate({
+        path: "course",
+        model: Course,
+      })
+      .lean();
+
+    if (!enrollment) return false;
+
+    return true;
+  } catch (error) {
+    throw new Error(error);
   }
 }

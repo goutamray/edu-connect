@@ -1,0 +1,137 @@
+import { Badge } from "@/components/ui/badge";
+import { getCategoryById } from "@/quires/categories";
+import { getAReports } from "@/quires/reports";
+import { BookOpen } from "lucide-react";
+import Image from "next/image";
+
+const EnrollCourseCard = async ({ enrollment }) => {
+  const category = await getCategoryById(enrollment?.course?.category?._id);
+
+  const filter = {
+    course: enrollment?.course?._id,
+    student: enrollment?.student?._id,
+  };
+
+  const report = await getAReports(filter);
+
+  // total completed modules
+  const totalCompletedModules = report?.totalCompletedModules
+    ? report?.totalCompletedModules?.length
+    : 0;
+
+  // get all quizess and assignments
+  const quizzess = report?.quizAssessment?.assessments;
+  const totalQuizess = quizzess ? quizzess?.length : 0;
+
+  // find attempted quizzess
+  const quizzessTaken = quizzess?.filter((q) => q.attempted);
+  const totalTaken = quizzessTaken ? quizzessTaken?.length : 0;
+
+  // find how many quizzess answer correct
+  const totalCorrect = quizzessTaken
+    ?.map((quiz) => {
+      const item = quiz?.options;
+
+      return item.filter((o) => {
+        return o.isCorrect === true && o.isSelected === true;
+      });
+    })
+    .filter((elem) => elem?.length > 0)
+    .flat();
+
+  // console.log({ totalCorrect });
+
+  // mark from quiz
+  const markFromQuiz = totalCorrect ? totalCorrect?.length * 5 : 0;
+
+  const othersMark = report?.quizAssessment?.otherMarks
+    ? report?.quizAssessment?.otherMarks
+    : 0;
+
+  // total marks
+  const totalMarks = markFromQuiz + othersMark;
+
+  return (
+    <>
+      <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
+        <div className="relative w-full aspect-video rounded-md overflow-hidden">
+          <Image
+            src={`/assets/images/courses/${enrollment?.course?.thumbnail}`}
+            alt={enrollment?.course?.title}
+            className="object-cover"
+            fill
+          />
+        </div>
+        <div className="flex flex-col pt-2">
+          <div className="text-lg md:text-base font-medium group-hover:text-sky-700 line-clamp-2">
+            {enrollment?.course?.title}
+          </div>
+          <p className="text-xs text-muted-foreground">{category?.title}</p>
+          <div className="my-3 flex items-center gap-x-2 text-sm md:text-xs">
+            <div className="flex items-center gap-x-1 text-slate-500">
+              <div>
+                <BookOpen className="w-4" />
+              </div>
+              <span> {enrollment?.course?.modules?.length} Chapters</span>
+            </div>
+          </div>
+          <div className=" border-b pb-2 mb-2">
+            <div className="flex items-center justify-between">
+              <p className="text-md md:text-sm font-medium text-slate-700">
+                Total Modules: {enrollment?.course?.modules?.length}
+              </p>
+              <p className="text-md md:text-sm font-medium text-slate-700">
+                Completed Modules{" "}
+                <Badge variant="success">{totalCompletedModules}</Badge>
+              </p>
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-md md:text-sm font-medium text-slate-700">
+                Total Quizzes: {totalQuizess}
+              </p>
+
+              <p className="text-md md:text-sm font-medium text-slate-700">
+                Quiz taken <Badge variant="success">{totalTaken}</Badge>
+              </p>
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-md md:text-sm font-medium text-slate-700">
+                Mark from Quizzes
+              </p>
+
+              <p className="text-md md:text-sm font-medium text-slate-700">
+                {markFromQuiz}
+              </p>
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-md md:text-sm font-medium text-slate-700">
+                Others
+              </p>
+
+              <p className="text-md md:text-sm font-medium text-slate-700">
+                {othersMark}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-md md:text-sm font-medium text-slate-700">
+              Total Marks
+            </p>
+
+            <p className="text-md md:text-sm font-medium text-slate-700">
+              {totalMarks}
+            </p>
+          </div>
+
+          {/* <CourseProgress
+            size="sm"
+            value={80}
+            variant={110 === 100 ? "success" : ""}
+          /> */}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default EnrollCourseCard;

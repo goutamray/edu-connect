@@ -1,11 +1,28 @@
+import { auth } from "@/auth";
 import EnrollCourse from "@/components/enroll-course";
 import { buttonVariants } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
+import { hasEnrollmentsForCourse } from "@/quires/enrollments";
+import { getUserByEmail } from "@/quires/users";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-const CourseIntro = ({ course }) => {
+const CourseIntro = async ({ course }) => {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  const loggedInUser = await getUserByEmail(session?.user?.email);
+
+  const hasEnrollment = await hasEnrollmentsForCourse(
+    course?.id,
+    loggedInUser?.id
+  );
+
   return (
     <>
       <div className="overflow-x-hidden  grainy">
@@ -24,14 +41,26 @@ const CourseIntro = ({ course }) => {
                 </p>
 
                 <div className="mt-6 flex items-center justify-center flex-wrap gap-3">
-                  <EnrollCourse
-                    asLink={false}
-                    course={{
-                      id: course.id.toString(),
-                      title: course.title,
-                      price: course.price,
-                    }}
-                  />
+                  {hasEnrollment ? (
+                    <Link
+                      href=""
+                      className={cn(
+                        buttonVariants({ variant: "outline", size: "lg" })
+                      )}
+                    >
+                      Access Course
+                    </Link>
+                  ) : (
+                    <EnrollCourse
+                      asLink={false}
+                      course={{
+                        id: course.id.toString(),
+                        title: course.title,
+                        price: course.price,
+                      }}
+                    />
+                  )}
+
                   <Link
                     href=""
                     className={cn(
