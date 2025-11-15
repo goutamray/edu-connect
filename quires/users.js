@@ -8,8 +8,7 @@ import bcrypt from "bcryptjs";
  * @returns
  */
 export async function getUserByEmail(email) {
-  const user = await User.findOne({ email: email }).lean();
-
+  const user = await User.findOne({ email: email }).select("-password").lean();
   return replaceMongoIdInObject(user);
 }
 
@@ -20,8 +19,16 @@ export async function getUserByEmail(email) {
  */
 export async function validatePassword(email, password) {
   const user = await getUserByEmail(email);
-
   const isMatch = await bcrypt.compare(password, user?.password);
-
   return isMatch;
+}
+
+/**
+ *
+ * @param {*} userId
+ * @returns
+ */
+export async function getUserDetails(userId) {
+  const user = await User.findById(userId).select("-password").lean();
+  return replaceMongoIdInObject(user);
 }

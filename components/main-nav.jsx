@@ -29,6 +29,7 @@ export function MainNav({ items, children }) {
   const router = useRouter();
 
   const [loginSession, setLoginSession] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   // if (session?.error === "RefreshAccessTokenError") {
   //   router.push("/login");
@@ -42,6 +43,22 @@ export function MainNav({ items, children }) {
 
   useEffect(() => {
     setLoginSession(session);
+
+    async function fetchMe() {
+      try {
+        const response = await fetch("/api/me");
+
+        const data = await response.json();
+
+        setLoggedInUser(data);
+
+        console.log(data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    fetchMe();
   }, [session]);
 
   const handleLogout = () => {
@@ -110,10 +127,10 @@ export function MainNav({ items, children }) {
               <div className="cursor-pointer">
                 <Avatar>
                   <AvatarImage
-                    src="https://github.com/shadcn.png"
-                    alt="@shadcn"
+                    src={loggedInUser?.profile_picture}
+                    alt={loggedInUser?.firstName}
                   />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarFallback>{loggedInUser?.firstName}</AvatarFallback>
                 </Avatar>
               </div>
             </DropdownMenuTrigger>
@@ -121,6 +138,12 @@ export function MainNav({ items, children }) {
               <DropdownMenuItem className="cursor-pointer" asChild>
                 <Link href="/account">Profile</Link>
               </DropdownMenuItem>
+              {loggedInUser?.role === "instructor" && (
+                <DropdownMenuItem className="cursor-pointer" asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </DropdownMenuItem>
+              )}
+
               <DropdownMenuItem className="cursor-pointer" asChild>
                 <Link href="/account/enrolled-courses">My Courses</Link>
               </DropdownMenuItem>
