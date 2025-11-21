@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { createCourse } from "@/app/actions/course";
 
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -43,8 +44,10 @@ const AddCourse = () => {
 
   const onSubmit = async (values) => {
     try {
-      router.push(`/dashboard/courses/${1}`);
-      toast.success("Course created");
+      const course = await createCourse(values);
+
+      router.push(`/dashboard/courses/${course?._id}`);
+      toast.success("Course Created Successfull ");
     } catch (error) {
       toast.error("Something went wrong");
     }

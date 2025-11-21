@@ -16,7 +16,7 @@ import { Lesson } from "@/models/lesson-model";
  * @returns
  */
 export async function getAllCourses() {
-  const courses = await Course.find({})
+  const courses = await Course.find({ active: true })
     .populate({
       path: "category",
       model: Category,
@@ -79,10 +79,13 @@ export async function getCourseDetailsById(id) {
  * @param {*} instructorId
  */
 export async function getCourseDetailsByInstructor(instructorId, expand) {
-  const courses = await Course.find({ instructor: instructorId }).lean();
+  const publishedCourses = await Course.find({
+    instructor: instructorId,
+    active: true,
+  }).lean();
 
   const enrollments = await Promise.all(
-    courses?.map(async (course) => {
+    publishedCourses?.map(async (course) => {
       const enrollment = await getEnrollmentsForCourse(course?._id.toString());
 
       return enrollment;
@@ -94,8 +97,8 @@ export async function getCourseDetailsByInstructor(instructorId, expand) {
     ({ course }) => course
   );
 
-  const totalRevenue = courses.reduce((acc, course) => {
-    return acc + groupByCourses[course._id].length * course.price;
+  const totalRevenue = publishedCourses.reduce((acc, course) => {
+    return acc + groupByCourses[course._id]?.length * course?.price;
   }, 0);
 
   const totalEnrollments =
@@ -104,7 +107,7 @@ export async function getCourseDetailsByInstructor(instructorId, expand) {
     }, 0) || 0;
 
   const testimonials = await Promise.all(
-    courses?.map(async (course) => {
+    publishedCourses?.map(async (course) => {
       const testimonial = await getTestimonialByCourse(course?._id.toString());
 
       return testimonial;
@@ -120,17 +123,34 @@ export async function getCourseDetailsByInstructor(instructorId, expand) {
       : 0;
 
   if (expand) {
+    const allCourses = await Course.find({
+      instructor: instructorId,
+    }).lean();
     return {
-      courses: courses?.flat(),
+      courses: allCourses?.flat(),
       enrollments: enrollments.flat(),
       reviews: totalTestimonials,
     };
   }
   return {
-    courses: courses?.length,
+    courses: publishedCourses?.length,
     enrollments: totalEnrollments,
     reviews: totalTestimonials?.length,
     ratings: avgRating.toPrecision(2),
     revenue: totalRevenue,
   };
+}
+
+/**
+ *
+ * @param {*} courseData
+ */
+export async function create(courseData) {
+  try {
+    const course = await Course.create(courseData);
+
+    return JSON.parse(JSON.stringify(course));
+  } catch (error) {
+    throw new Error(error);
+  }
 }
